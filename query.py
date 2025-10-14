@@ -21,6 +21,7 @@ with cte_temp as (
     x.failure_category_l2,
     x.ticket_id as bug_id,
     'TeRRA' as method_type,
+    array_join(array_agg(x.run_uuid), ', ') AS run_uuids,
     count(distinct x.run_uuid) as no_of_runs,
     count(
       distinct CASE
@@ -90,10 +91,6 @@ with cte_temp as (
       'android_carbon_release_appium_main',
       'android_helix_dual_release_appium_main',
       'ios_helix_dual_release_appium_main',
-'ios_carbon_nightly_appium_main',
-      'android_carbon_nightly_appium_main',
-      'android_helix_dual_nightly_appium_main',
-      'ios_helix_dual_nightly_appium_main',
       'android carbon us&c run1 appium main',
       'android helix us&c run1 appium main',
       'ios carbon us&c run1 appium main',
@@ -103,10 +100,32 @@ with cte_temp as (
       'android_helix_usnc_run2_appium_main',
       'ios_helix_usnc_run2_appium_main',
       'android_restaurants_release_appium_main',
-'android_restaurants_nightly_appium_main'
+'Android Helix Dual Safety Release Appium Main',
+'iOS Helix Dual Safety Release Appium Main',
+'Android Helix Dual Rider Release Appium Main',
+'iOS Helix Dual Rider Release Appium Main',
+'Android Helix Dual Release Appium Main',
+'Android Carbon Release Appium Main',
+'Android Eats Release Appium Main',
+'iOS Helix Dual Rider Release Appium Main',
+'iOS Carbon Release Appium Main',
+'iOS Eats Release Appium Main',
+
+'ios_helix_dual_rider_release_appium_main',
+'ios_helix_dual_safety_release_appium_main',
+'android_helix_dual_release_appium_main',
+'android_eats_release_appium_main',
+'android_helix_dual_rider_release_appium_main',
+'ios_carbon_release_appium_main',
+'ios_eats_release_appium_main',
+'android_helix_dual_safety_release_appium_main',
+'android_carbon_release_appium_main'
+
     )
     and lower(failure_category_l2) != 'evicted' 
-    and CAST(FROM_UNIXTIME(x.created_at / 1000) AS DATE) >= DATE '2025-01-01'
+    and CAST(FROM_UNIXTIME(x.created_at / 1000) AS DATE) >=  DATE '2025-01-01'
+
+
 
 
     and (build_version LIKE '%10000%' 
@@ -158,6 +177,7 @@ select
     x.failure_category_l2,
     x.ticket_id as bug_id,
     'Non TeRRA' as method_type,
+    array_join(array_agg(x.run_uuid), ', ') AS run_uuids,
     count(distinct x.run_uuid) as no_of_runs,
     count(
       distinct CASE
@@ -229,10 +249,6 @@ select
       'android_carbon_release_appium_main',
       'android_helix_dual_release_appium_main',
       'ios_helix_dual_release_appium_main',
-'ios_carbon_nightly_appium_main',
-      'android_carbon_nightly_appium_main',
-      'android_helix_dual_nightly_appium_main',
-      'ios_helix_dual_nightly_appium_main',
       'android carbon us&c run1 appium main',
       'android helix us&c run1 appium main',
       'ios carbon us&c run1 appium main',
@@ -242,10 +258,32 @@ select
       'android_helix_usnc_run2_appium_main',
       'ios_helix_usnc_run2_appium_main',
       'android_restaurants_release_appium_main',
-'android_restaurants_nightly_appium_main'
+'Android Helix Dual Safety Release Appium Main',
+'iOS Helix Dual Safety Release Appium Main',
+'Android Helix Dual Rider Release Appium Main',
+'iOS Helix Dual Rider Release Appium Main',
+'Android Helix Dual Release Appium Main',
+'Android Carbon Release Appium Main',
+'Android Eats Release Appium Main',
+'iOS Helix Dual Rider Release Appium Main',
+'iOS Carbon Release Appium Main',
+'iOS Eats Release Appium Main',
+
+'ios_helix_dual_rider_release_appium_main',
+'ios_helix_dual_safety_release_appium_main',
+'android_helix_dual_release_appium_main',
+'android_eats_release_appium_main',
+'android_helix_dual_rider_release_appium_main',
+'ios_carbon_release_appium_main',
+'ios_eats_release_appium_main',
+'android_helix_dual_safety_release_appium_main',
+'android_carbon_release_appium_main'
     )
     and lower(failure_category_l2) != 'evicted' 
     and CAST(FROM_UNIXTIME(x.created_at / 1000) AS DATE) >= DATE '2025-01-01'
+
+
+
      
     and (build_version LIKE '%10000%' 
  OR build_version LIKE '%10001%' 
@@ -611,10 +649,6 @@ with cte_temp as (
       'android_carbon_release_appium_main',
       'android_helix_dual_release_appium_main',
       'ios_helix_dual_release_appium_main',
-      'ios_carbon_nightly_appium_main',
-      'android_carbon_nightly_appium_main',
-      'android_helix_dual_nightly_appium_main',
-      'ios_helix_dual_nightly_appium_main',
       'android carbon us&c run1 appium main',
       'android helix us&c run1 appium main',
       'ios carbon us&c run1 appium main',
@@ -624,7 +658,26 @@ with cte_temp as (
       'android_helix_usnc_run2_appium_main',
       'ios_helix_usnc_run2_appium_main',
       'android_restaurants_release_appium_main',
-'android_restaurants_nightly_appium_main'
+'Android Helix Dual Safety Release Appium Main',
+'iOS Helix Dual Safety Release Appium Main',
+'Android Helix Dual Rider Release Appium Main',
+'iOS Helix Dual Rider Release Appium Main',
+'Android Helix Dual Release Appium Main',
+'Android Carbon Release Appium Main',
+'Android Eats Release Appium Main',
+'iOS Helix Dual Rider Release Appium Main',
+'iOS Carbon Release Appium Main',
+'iOS Eats Release Appium Main',
+
+'ios_helix_dual_rider_release_appium_main',
+'ios_helix_dual_safety_release_appium_main',
+'android_helix_dual_release_appium_main',
+'android_eats_release_appium_main',
+'android_helix_dual_rider_release_appium_main',
+'ios_carbon_release_appium_main',
+'ios_eats_release_appium_main',
+'android_helix_dual_safety_release_appium_main',
+'android_carbon_release_appium_main'
     )
     and lower(failure_category_l2) != 'evicted'
     and CAST(FROM_UNIXTIME(x.created_at / 1000) AS DATE) >= DATE '2025-01-01'
@@ -756,10 +809,6 @@ select
       'android_carbon_release_appium_main',
       'android_helix_dual_release_appium_main',
       'ios_helix_dual_release_appium_main',
-      'ios_carbon_nightly_appium_main',
-      'android_carbon_nightly_appium_main',
-      'android_helix_dual_nightly_appium_main',
-      'ios_helix_dual_nightly_appium_main',
       'android carbon us&c run1 appium main',
       'android helix us&c run1 appium main',
       'ios carbon us&c run1 appium main',
@@ -769,7 +818,26 @@ select
       'android_helix_usnc_run2_appium_main',
       'ios_helix_usnc_run2_appium_main',
       'android_restaurants_release_appium_main',
-'android_restaurants_nightly_appium_main'
+'Android Helix Dual Safety Release Appium Main',
+'iOS Helix Dual Safety Release Appium Main',
+'Android Helix Dual Rider Release Appium Main',
+'iOS Helix Dual Rider Release Appium Main',
+'Android Helix Dual Release Appium Main',
+'Android Carbon Release Appium Main',
+'Android Eats Release Appium Main',
+'iOS Helix Dual Rider Release Appium Main',
+'iOS Carbon Release Appium Main',
+'iOS Eats Release Appium Main',
+
+'ios_helix_dual_rider_release_appium_main',
+'ios_helix_dual_safety_release_appium_main',
+'android_helix_dual_release_appium_main',
+'android_eats_release_appium_main',
+'android_helix_dual_rider_release_appium_main',
+'ios_carbon_release_appium_main',
+'ios_eats_release_appium_main',
+'android_helix_dual_safety_release_appium_main',
+'android_carbon_release_appium_main'
     )
     and lower(failure_category_l2) != 'evicted'
     and CAST(FROM_UNIXTIME(x.created_at / 1000) AS DATE) >= DATE '2025-01-01'
