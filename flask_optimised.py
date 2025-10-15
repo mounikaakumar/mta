@@ -575,7 +575,7 @@ def calculate_optimized_metrics(filters):
                 end) as product_bugs,
                 SUM(CASE WHEN bug_type = 'Product Flow Changes' or l1_category="Product Flow Changes" THEN 1 ELSE 0 END) as pc_failure,
                 SUM(CASE WHEN bug_type = 'Test Script Failures' THEN 1 ELSE 0 END) as t_script_failure,
-                SUM(CASE WHEN bug_type = 'Not triaged' THEN 1 ELSE 0 END) as untriaged,
+                SUM(CASE WHEN bug_type = 'Not triaged' and not dl_failures THEN 1 ELSE 0 END) as untriaged,
                 SUM(CASE WHEN bug_type = 'Framework Tickets' THEN 1 ELSE 0 END) as frame_failures,
                 SUM(case when l1_category='Unclassified' then 1 else 0 end) as unclassified
             FROM metrics_data
@@ -620,7 +620,9 @@ def calculate_optimized_metrics(filters):
             SUM(CASE WHEN pfc_bug_type = 'Identifier' THEN 1 ELSE 0 END) as identifier,
             SUM(CASE WHEN pfc_bug_type = 'Others' THEN 1 ELSE 0 END) as others,
             -- Masked infra runs
-            SUM(no_of_masked_infra_runs) as masked_infra_runs
+            SUM(CASE WHEN  l1_category='Masked Infra' THEN 1 ELSE 0 END) as no_of_masked_infra_runs,
+            SUM(CASE WHEN  l1_category='Infra' THEN 1 ELSE 0 END) as Only_Infra
+           
         FROM terra_test_data_optimized
         {test_where_clause}
         """
@@ -649,16 +651,17 @@ def calculate_optimized_metrics(filters):
                 'fail': result[3] or 0,
                 'dl_failures': result[5] or 0,
                 'infra_runs_new': result[4] or 0,
-                'no_of_masked_infra_runs': breakdown_result[6] or 0,
+                'no_of_masked_infra_runs': breakdown_result[7] or 0,
                 'product_bugs': result[6] or 0,
                 'one_time': breakdown_result[0] or 0,
                 'intermittent': breakdown_result[1] or 0,
                 'always': breakdown_result[2] or 0,
                 'PPB_failures':breakdown_result[3] or 0,
                 'pc_failure': result[7] or 0,
-                'flow_change': breakdown_result[3] or 0,
-                'identifier': breakdown_result[4] or 0,
-                'others': breakdown_result[5] or 0,
+                'flow_change': breakdown_result[4] or 0,
+                'identifier': breakdown_result[5] or 0,
+                'others': breakdown_result[6] or 0,
+                'Only_Infra': breakdown_result[8] or 0,
                 't_script_failure': result[8] or 0,
                 'u1': result[9] or 0,
                 'frame_failures': result[10] or 0,
@@ -683,12 +686,14 @@ def calculate_optimized_metrics(filters):
             metrics['pc_failure_p'] = f"{(metrics['pc_failure'] / total_runs * 100):.2f}%"
             metrics['u1_p'] = f"{(metrics['u1'] / total_runs * 100):.2f}%"
             metrics['unclassified_failure_p'] = f"{(metrics['unclassified_failure'] / total_runs * 100):.2f}%"
+            metrics['Only_Infra_p'] = f"{(metrics['Only_Infra'] / total_runs * 100):.2f}%"
+            metrics['no_of_masked_infra_runs_p'] = f"{(metrics['no_of_masked_infra_runs'] / total_runs * 100):.2f}%"
 
         else:
             metrics.update({
                 'pass_rate': "0.0%", 'fail_rate': "0.0%",
                 'dl_failures_p': "0.0%", 'infra_runs_new_p': "0.0%",
-                'pb_perc': "0.0%", 'pc_failure_p': "0.0%"
+                'pb_perc': "0.0%", 'pc_failure_p': "0.0%" ,'Only_Infra_p' :"0.0%"
             })
         
         # Feature-based percentages (leave others as feature-based)
@@ -713,7 +718,7 @@ def calculate_optimized_metrics(filters):
         else:
             metrics.update({
                 'one_time_p': "0.0%", 'intermittent_p': "0.0%", 'always_p': "0.0%",'ppb_p' : "0.0%",
-                'flow_change_p': "0.0%", 'identifier_p': "0.0%", 'others_p': "0.0%"
+                'flow_change_p': "0.0%", 'identifier_p': "0.0%", 'others_p': "0.0%" 
             })
         
         # Additional fields
@@ -1296,7 +1301,7 @@ def get_feature_breakdowns_optimized(filters=None, feature_page=1, per_page=10):
             total_passed_feature += (passed_runs or 0)
 
         if total_runs_feature > 0:
-            grand_rate_feature = round(total_passed_feature / total_runs_feature, 2)
+            grand_rate_feature = round(total_passed_feature * 100.0/ total_runs_feature, 2)
             feature_breakdown.append({
                 'feature': 'Grand total',
                 'bugs': total_bugs,
@@ -2604,8 +2609,7 @@ if __name__ == '__main__':
             init_optimized_db()
             sync_optimized()
             scheduler.start()
-            app.run(host='0.0.0.0', port=5005)
-
+            app.run(host='0.0.0.0', port=5008)
 
 
 
