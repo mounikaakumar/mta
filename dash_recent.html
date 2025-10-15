@@ -1008,14 +1008,14 @@
         <div class="arrow"></div>
         <div class="breakdown">
           <div class="breakdown-box" style="width: 90px;">
-            <div class="breakdown-label">occurrence</div>
-            <strong>{{ occurrence }}</strong>
-            <div class="breakdown-label small">{{ occurrence_pct }}%</div>
+            <div class="breakdown-label">Only Infra</div>
+            <strong>{{ Only_Infra }}</strong>
+            <div class="breakdown-label small">{{ Only_Infra_p }}</div>
           </div>
           <div class="breakdown-box" style="width: 110px;">
-            <div class="breakdown-label">no_of_masked_infra_runs</div>
+            <div class="breakdown-label">Masked Infra</div>
             <strong>{{ no_of_masked_infra_runs }}</strong>
-            <div class="breakdown-label small">{{ no_of_masked_infra_runs }}%</div>
+            <div class="breakdown-label small">{{ no_of_masked_infra_runs_p }}</div>
           </div>
         </div>
       </td>
@@ -1999,7 +1999,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 </script> -->
 
-<script>
+<!-- <script>
   $(document).ready(function () {
     // All filter elements including date input
     const $filters = $('#latest_release, #build_version, #lob, #app_platform, #os_version, #scenarioname, #date_range');
@@ -2015,7 +2015,38 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+</script> -->
+
+<script>
+  $(document).ready(function () {
+    // All filter elements
+    const $filters = $('#latest_release, #build_version, #lob, #app_platform, #os_version, #scenarioname, #date_range');
+
+    // Track if user has interacted with a filter
+    let filterChanged = false;
+
+    // Mark as changed when user selects or updates a filter
+    $filters.on('change', function () {
+      filterChanged = true;
+    });
+
+    // When user clicks outside the filter area
+    $(document).on('click', function (e) {
+      if (filterChanged &&
+          !$(e.target).closest('.select2-container, .modern-date-container').length &&
+          !$(e.target).is($filters)) {
+        
+        // Reset flag to prevent multiple submits
+        filterChanged = false;
+
+        // Show loader and submit form
+        $('#spinnerOverlay').addClass('active');
+        $('#filterForm')[0].submit();
+      }
+    });
+  });
 </script>
+
 
 
 <script>
@@ -2042,5 +2073,4 @@ $(document).ready(function () {
 
 </body>
 </html>
-
 
